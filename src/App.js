@@ -1,28 +1,27 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import Game from './Game/Game';
+
 
 class App extends Component {
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+        <Hello />
+        <Greetings displayText='zee' />
+        <Game />
       </div>
     );
   }
 }
 
+function Hello() {
+  //return <div>Hello World!</div>;
+  return React.createElement('h1', null, 'Hello Worldzzz!!!');
+}
+
+class Greetings extends Component {
+  render() {
+    return <div>I said {this.props.displayText}</div>;
+  }
+}
 export default App;
