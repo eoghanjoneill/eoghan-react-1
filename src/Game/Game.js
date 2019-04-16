@@ -2,18 +2,28 @@ import React from 'react';
 import './Game.css';
 
   class Square extends React.Component {
+    constructor(props) {
+      super(props);
+        this.state = {
+          value: false
+        };
+    }
     render() {
       return (
-        <button className="square">
-          {/* TODO */}
+        <button className="square" onClick={() => this.setState({value: !this.state.value})}>
+          {this.state.value ? "O" : "X"}
         </button>
       );
     }
   }
   
   class Board extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = {vals: []}
+    }
     renderSquare(i) {
-      return <Square />;
+      return <Square value={i}/>;
     }
   
     render() {
