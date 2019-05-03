@@ -16,7 +16,8 @@ import './Game.css';
       this.state = {
         squares: Array(9).fill(null),
         next: "X",
-        winner: null
+        winner: null,
+        dodgyMove: false
       };
       this.winners = [[0,1,2],[3,4,5],[6,7,8],
                        [0,3,6],[1,4,7],[2,5,8],
@@ -34,14 +35,20 @@ import './Game.css';
   
     handleClick(i) {
       const squares = this.state.squares.slice();
-      const lastMover = this.state.next;
+      const lastMover = this.state.next; 
+
+      if (squares[i]) {        
+        this.setState({dodgyMove: true});
+        return;
+      }
+      
       squares[i] = lastMover;
       const next = lastMover === "X" ? "O" : "X";
       let winner = this.state.winner;
       if (this.checkForWin(squares, lastMover)) {
         winner = lastMover;
       }
-      this.setState({squares: squares, next: next, winner: winner});
+      this.setState({squares: squares, next: next, winner: winner, dodgyMove: false});
     }
 
     checkForWin(squares, lastMover) {
@@ -52,13 +59,15 @@ import './Game.css';
     }
     
     render() {
-      const status = `Next player: ${this.state.next}`;
-      const winStatus = this.state.winner ? `Hot dog, we have a wiener: ${this.state.winner}!` : '';
+      let status = `Next player: ${this.state.next}`;
+            
+      if (this.state.winner) {
+        status = `Hot dog, we have a wiener: ${this.state.winner}!`;
+      }
   
       return (
-        <div>
-          <div className="status">{status}</div>
-          <div className="status">{winStatus}</div>
+        <div className={this.state.dodgyMove ? "dodgyMove" : ""}>
+          <div className="status">{status}</div>          
           <div className="board-row">
             {this.renderSquare(0)}
             {this.renderSquare(1)}
