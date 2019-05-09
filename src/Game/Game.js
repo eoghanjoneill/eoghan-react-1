@@ -10,64 +10,19 @@ import './Game.css';
     
   }
   
-  class Board extends React.Component {
-    constructor(props) {
-      super(props);
-      this.state = {
-        squares: Array(9).fill(null),
-        next: "X",
-        winner: null,
-        dodgyMove: false
-      };
-      this.winners = [[0,1,2],[3,4,5],[6,7,8],
-                       [0,3,6],[1,4,7],[2,5,8],
-                       [0,4,8],[2,4,6]];
-    }    
+  class Board extends React.Component {       
 
     renderSquare(i) {
       return (
           <Square
-            value={this.state.squares[i]}
-            onClick={() => this.handleClick(i)}
+            value={this.props.squares[i]}
+            onClick={() => this.props.onClick(i)}
           />
         );
-    }
-  
-    handleClick(i) {
-      const squares = this.state.squares.slice();
-      const lastMover = this.state.next; 
-
-      if (squares[i]) {        
-        this.setState({dodgyMove: true});
-        return;
-      }
-      
-      squares[i] = lastMover;
-      const next = lastMover === "X" ? "O" : "X";
-      let winner = this.state.winner;
-      if (this.checkForWin(squares, lastMover)) {
-        winner = lastMover;
-      }
-      this.setState({squares: squares, next: next, winner: winner, dodgyMove: false});
-    }
-
-    checkForWin(squares, lastMover) {
-      //only need to check for winning combinations for the last mover, i.e. if X was last to move then O cannot win on this turn      
-      return this.winners.some((indices) => {
-        return indices.every((squarePos) => squares[squarePos] === lastMover)
-      });      
-    }
-    
-    render() {
-      let status = `Next player: ${this.state.next}`;
-            
-      if (this.state.winner) {
-        status = `Hot dog, we have a wiener: ${this.state.winner}!`;
-      }
-  
+    }       
+    render() { 
       return (
-        <div className={this.state.dodgyMove ? "dodgyMove" : ""}>
-          <div className="status">{status}</div>          
+        <div key={this.props.clickCount} className={this.props.dodgyMove ? "dodgyMove" : ""}>
           <div className="board-row">
             {this.renderSquare(0)}
             {this.renderSquare(1)}
@@ -89,14 +44,75 @@ import './Game.css';
   }
   
   class Game extends React.Component {
+    constructor(props) {
+      super(props);
+      this.state = {
+        history: [{ 
+          squares: Array(9).fill(null),
+        }],
+        xIsNext: true,
+        dodgyMove: false,
+        clickCount: 0,
+      };
+      this.winners = [[0,1,2],[3,4,5],[6,7,8],
+                       [0,3,6],[1,4,7],[2,5,8],
+                       [0,4,8],[2,4,6]];
+    }
+
+    checkForWin(squares, lastMover) {
+      //only need to check for winning combinations for the last mover, i.e. if X was last to move then O cannot win on this turn      
+      return this.winners.some((indices) => {
+        return indices.every((squarePos) => squares[squarePos] === lastMover)
+      });      
+    }
+
+    handleClick(i) {
+      const history = this.state.history;
+      const current = history[history.length - 1];
+      const squares = current.squares.slice();
+      const lastMover = this.state.xIsNext ? 'X' : 'O'; 
+      const clickCount = this.state.clickCount + 1;
+
+      if (squares[i]) {        
+        this.setState({dodgyMove: true, clickCount: clickCount});
+        return;
+      }
+      
+      squares[i] = lastMover;
+      const xIsNext = !this.state.xIsNext;
+      
+      this.setState({history: history.concat([{squares: squares,}]), xIsNext: xIsNext, dodgyMove: false, clickCount: clickCount});
+    }
+
     render() {
+      const history = this.state.history;
+      const current = history[history.length - 1];
+      let lastMover, nextMover;
+      if (this.state.xIsNext) {
+        lastMover = 'O'; nextMover = 'X';
+      } else {
+        lastMover = 'X'; nextMover = 'O';
+      }
+      const hasWinner = this.checkForWin(current.squares, lastMover);
+      let status;
+      if (hasWinner) {
+        status = `Hot dog, we have a wiener: ${lastMover}!`;
+      } else {
+        status = `Next player: ${nextMover}`;
+      }
+
       return (
         <div className="game">
           <div className="game-board">
-            <Board />
+            <Board 
+              squares={current.squares}
+              onClick={(i) => this.handleClick(i)}
+              dodgyMove={this.state.dodgyMove}
+              clickCount={this.state.clickCount}
+            />
           </div>
           <div className="game-info">
-            <div>{/* status */}</div>
+            <div>{status}</div>
             <ol>{/* TODO */}</ol>
           </div>          
         </div>
