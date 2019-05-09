@@ -51,6 +51,7 @@ import './Game.css';
           squares: Array(9).fill(null),
         }],
         xIsNext: true,
+        stepNumber: 0,
         dodgyMove: false,
         clickCount: 0,
       };
@@ -67,8 +68,8 @@ import './Game.css';
     }
 
     handleClick(i) {
-      const history = this.state.history;
-      const current = history[history.length - 1];
+      const history = this.state.history.slice(0, this.state.stepNumber + 1);
+      const current = history[this.state.stepNumber];
       const squares = current.squares.slice();
       const lastMover = this.state.xIsNext ? 'X' : 'O'; 
       const clickCount = this.state.clickCount + 1;
@@ -81,7 +82,14 @@ import './Game.css';
       squares[i] = lastMover;
       const xIsNext = !this.state.xIsNext;
       
-      this.setState({history: history.concat([{squares: squares,}]), xIsNext: xIsNext, dodgyMove: false, clickCount: clickCount});
+      this.setState({history: history.concat([{squares: squares,}]), xIsNext: xIsNext, stepNumber: history.length, dodgyMove: false, clickCount: clickCount});
+    }
+
+    jumpTo(step) {
+      this.setState({
+        stepNumber: step,
+        xIsNext: (step % 2) === 0,
+      });
     }
 
     render() {
@@ -94,6 +102,16 @@ import './Game.css';
         lastMover = 'X'; nextMover = 'O';
       }
       const hasWinner = this.checkForWin(current.squares, lastMover);
+
+      const moves = history.map((step, move) => {
+        const desc = move ? 'Go to move #' + move : 'Go to game start';
+        return (
+          <li key={move}>
+            <button onClick={() => this.jumpTo(move)}>{desc}</button>
+          </li>
+        );
+      });
+      
       let status;
       if (hasWinner) {
         status = `Hot dog, we have a wiener: ${lastMover}!`;
@@ -113,7 +131,7 @@ import './Game.css';
           </div>
           <div className="game-info">
             <div>{status}</div>
-            <ol>{/* TODO */}</ol>
+            <ol>{moves}</ol>
           </div>          
         </div>
       );
