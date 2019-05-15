@@ -89,12 +89,14 @@ import './Game.css';
       this.setState({
         stepNumber: step,
         xIsNext: (step % 2) === 0,
+        dodgyMove: false,
+        clickCount: 0
       });
     }
 
     render() {
-      const history = this.state.history;
-      const current = history[history.length - 1];
+      const history = this.state.history.slice(0, this.state.stepNumber + 1);
+      const current = history[this.state.stepNumber];
       let lastMover, nextMover;
       if (this.state.xIsNext) {
         lastMover = 'O'; nextMover = 'X';
