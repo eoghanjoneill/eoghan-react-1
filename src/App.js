@@ -9,38 +9,34 @@ class App extends Component {
     this.setCounter = this.setCounter.bind(this);
   }
 
-  setCounter() {
+  setCounter(x) {
     this.setState(state => ({
-      counter: state.counter + 1
+      counter: state.counter + x,
     }));
   } 
 
   render() {    
     return (
       <div className='App'>
-        <Button clickHandler={this.setCounter} counter={this.state.counter} />
-        <Greetings displayText={this.state.counter} />
+        <Button clickHandler={() => this.setCounter(2)} counter={this.state.counter} />
+        <Display displayText={this.state.counter} />
+        <br />
         <Game />
       </div>
     );
   }
 }
 
-const Button = ({clickHandler, counter}) => {
+/*const Button = ({clickHandler, counter}) => {
   return <button onClick={clickHandler}>{counter}</button>;
-}
-
-/*function Button(props) {
-  // [stateObject, setter] = useState(initialStateValue);
-  //const [counter, setCounter] = useState(1);
-  
-  return <button onClick={props.clickHandler}>{props.counter}</button>;  
 }*/
 
-class Greetings extends Component {
-  render() {
-    return <div>I said {this.props.displayText}</div>;
-  }
+function Button(props) {  
+  return <button onClick={props.clickHandler}>{props.counter}</button>;  
+}
+
+function Display(props) {
+  return <div>The state is {props.displayText}</div>;  
 }
 
 export default App;
