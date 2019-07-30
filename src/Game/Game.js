@@ -54,12 +54,13 @@ import './Game.css';
         stepNumber: 0,
         dodgyMove: false,
         clickCount: 0,
+        showGame: false,
       };
       this.winners = [[0,1,2],[3,4,5],[6,7,8],
                        [0,3,6],[1,4,7],[2,5,8],
                        [0,4,8],[2,4,6]];
     }
-
+    
     checkForWin(squares, lastMover) {
       //only need to check for winning combinations for the last mover, i.e. if X was last to move then O cannot win on this turn      
       return this.winners.some((indices) => {
